@@ -7,17 +7,48 @@ import joblib
 
 data = pd.read_csv('../Wines.csv')
 
-# Séparation des données en caractéristiques (X) et variable cible (y)
-dataSet = data.drop(['quality', 'Id'], axis=1)  # Excluez 'Id' car il semble être un identifiant unique
+dataSet = data.drop(['quality', 'Id'], axis=1) 
 quality = data['quality']
 
 dataSet_train, dataSet_test, quality_train, quality_test = train_test_split(dataSet, quality, test_size=0.2, random_state=42)
 
+#Model avec 127 arbres de decisions
+model = RandomForestRegressor(n_estimators=1127, random_state=42)
 
-print('Training dataSet Shape:', dataSet_train.shape)
-print('Training dataSet_test Shape:', dataSet_test.shape)
-print('Testing quality_train Shape:', quality_train.shape)
-print('Testing quality_test Shape:', quality_test.shape)
-
-model = RandomForestRegressor(n_estimators=100, random_state=42)
+#Entraine le model sur les data d'entrainement
 model.fit(dataSet_train, quality_train)
+
+# Use the forest's predict method on the test data
+predictions = model.predict(dataSet_test)
+rounded_predictions = [int(round(pred)) for pred in predictions] 
+
+mse = mean_squared_error(quality_test, rounded_predictions)
+print(f'Mean Squared Error on Test Data: {mse}')
+
+joblib.dump(model, './foret/wine_quality_model.joblib')
+
+# Charge le modèle à partir du fichier sauvegardé
+loaded_model = joblib.load('./foret/wine_quality_model.joblib')
+
+new_data = {
+    'fixed acidity': 10.7,
+    'volatile acidity': 0.35,
+    'citric acid': 0.53,
+    'residual sugar': 2.6,
+    'chlorides': 0.07,
+    'free sulfur dioxide': 5.0,
+    'total sulfur dioxide': 7.0,
+    'density': 0.9972,
+    'pH': 3.15,
+    'sulphates': 0.65,
+    'alcohol': 11.0
+}
+
+# DataFrame avec les valeurs saisies
+new_data_df = pd.DataFrame([new_data])
+
+# Prédiction de la qualité du vin saisi
+prediction = loaded_model.predict(new_data_df)[0]
+rounded_prediction = int(round(prediction))
+
+print(f'Prédiction de qualité du vin: {rounded_prediction}')
