@@ -26,7 +26,6 @@ async def do_predit(to_predict:Wine):
     "sulphates": to_predict.sulphates,    
     "alcohol": to_predict.alcohol
     }
-    print(wine)
     return predict(wine)
 
 @router.get("/api/model")
