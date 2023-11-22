@@ -45,8 +45,7 @@ def modelCreation():
 
     joblib.dump(model, './foret/wine_quality_model.joblib')
 
-def predict(new_data:Wine):
-    
+def predict(new_data):
     if not (os.path.exists('./foret/wine_quality_model.joblib')):
         modelCreation()
 
@@ -55,6 +54,8 @@ def predict(new_data:Wine):
 
     # DataFrame avec les valeurs saisies
     new_data_df = pd.DataFrame([new_data])
+        
+
 
     # Prédiction de la qualité du vin saisi
     prediction = loaded_model.predict(new_data_df)[0]
