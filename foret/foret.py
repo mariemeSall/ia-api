@@ -5,11 +5,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 import joblib
+from api.model import Wine
+from csv import writer
 
+attributes_name = ["fixed_acidity", 
+    "volatile_acidity", 
+    "citric_acid", 
+    "residual_sugar",
+    "cholrides",
+    "free_sulfur_dioxide",
+    "total_sulfur_dioxide",
+    "density",
+    "pH",
+    "sulphates",
+    "alcohol", 
+    "quality"  ]
 
 def modelCreation():
     
-    data = pd.read_csv('../Wines.csv')
+    data = pd.read_csv('Wines.csv')
 
     dataSet = data.drop(['quality', 'Id'], axis=1) 
     quality = data['quality']
@@ -31,7 +45,7 @@ def modelCreation():
 
     joblib.dump(model, './foret/wine_quality_model.joblib')
 
-def predict(new_data):
+def predict(new_data:Wine):
     
     if not (os.path.exists('./foret/wine_quality_model.joblib')):
         modelCreation()
@@ -48,16 +62,19 @@ def predict(new_data):
 
     return rounded_prediction
 
-print(predict({
-    'fixed acidity': 10.7,
-    'volatile acidity': 0.35,
-    'citric acid': 0.53,
-    'residual sugar': 2.6,
-    'chlorides': 0.07,
-    'free sulfur dioxide': 5.0,
-    'total sulfur dioxide': 7.0,
-    'density': 0.9972,
-    'pH': 3.15,
-    'sulphates': 0.65,
-    'alcohol': 11.0
-}))
+
+def add_new_data(new_data: Wine):
+    wine = [ ]
+    for a in attributes_name :
+        print(a)
+        if not a.startswith('__'):
+            b = getattr(new_data, a)
+            print(b)
+            wine.append(b)
+
+    with open('Wines.csv', 'a') as f_object:
+        writer_object = writer(f_object)
+        writer_object.writerow(wine)
+        f_object.close()
+
+    return True
