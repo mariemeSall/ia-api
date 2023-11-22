@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter
 from api.model import *
 from foret.foret import *
@@ -12,7 +13,20 @@ async def show_characteristiques():
 
 @router.post("/api/predict")
 async def do_predit(to_predict:Wine):
-    return predict(to_predict)
+    wine = {
+        "fixed_acidity": to_predict.fixed_acidity,    
+    "volatile_acidity": to_predict.volatile_acidity,    
+    "citric_acid": to_predict.citric_acid,    
+    "residual_sugar": to_predict.residual_sugar,
+    "chlorides": to_predict.chlorides,   
+    "free_sulfur_dioxide": to_predict.free_sulfur_dioxide,    
+    "total_sulfur_dioxide": to_predict.total_sulfur_dioxide,    
+    "density": to_predict.density,
+    "pH": to_predict.pH,   
+    "sulphates": to_predict.sulphates,    
+    "alcohol": to_predict.alcohol
+    }
+    return predict(wine)
 
 @router.get("/api/model")
 async def get_model_serialize():
